@@ -36,11 +36,11 @@ pip3 install -r requirements.txt
 ```
 
 ```bash
-python manage.py migrate
+python3 manage.py migrate
 ```
 
 ```bash
-python manage.py runserver
+python3 manage.py runserver
 ```
 
 ```bash
@@ -61,6 +61,6 @@ python3 manage.py runserver 0:2222
 
 ## In browser
 ```python
-open http://localhost:2222
+http://localhost:2222
 ```
 
