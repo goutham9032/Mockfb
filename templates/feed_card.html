@@ -1,0 +1,35 @@
+
+<div class="row justify-content-center post_card_row feed_card" id={{feed.slug}}>
+    <div class="col-6">
+       <div class="post_card_div feed_card_div">
+         <div class="usr_img">
+             <img src="https://www.timeoutdubai.com/sites/default/files/tod/styles/full_img/public/images/2017/12/20/2017_amazing_things_to_do_in_Dubai_with_guests_base.jpg?itok=VOHRDY6q">
+         </div>
+         <div class="usr_info">
+             <span>{{feed.owner.first_name}}</span>
+             <span>Published on {{feed.created_at}} </span>
+         </div>
+         <div class="dropdown pointer">
+              <i class="fa fa-ellipsis-v dropdown-toggle" data-toggle="dropdown"  aria-hidden="true"></i>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item disabled" href="#">Edit</a>
+                <a class="dropdown-item pointer delete_feed">Delete</a>
+              </div>
+         </div>
+      </div>
+      <div class="feed_content">
+          <p>{{feed.description}}</p>
+          <img src="{{feed.file_location}}">
+      </div>
+      <hr>
+      <div class="feed_info_div">
+          <i class="fa {% if feed.like %}fa-heart{% else %}fa-heart-o{% endif %} like_heart pointer" aria-hidden="true"></i>
+          <i class="fa fa-comment-o no_pointer" id="comment_icon" aria-hidden="true"></i>
+          <i class="fa fa-share no_pointer" id="share_icon" aria-hidden="true"></i>
+          <div class="like_comment_div">
+              <span><span id="likes_count">{{feed.likes_count}}</span> likes </span>
+              <span>0 comments</span>
+          </div>
+      </div>
+    </div>
+</div>

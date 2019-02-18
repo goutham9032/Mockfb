@@ -1,0 +1,49 @@
+
+<div class="row justify-content-center post_card_row">
+    <div class="col-6">
+       <div class="post_card_div row">
+       
+         <div class="col-8">
+             <div class="usr_img">
+                 <img src="https://www.timeoutdubai.com/sites/default/files/tod/styles/full_img/public/images/2017/12/20/2017_amazing_things_to_do_in_Dubai_with_guests_base.jpg?itok=VOHRDY6q">
+             </div>
+             <div class="usr_info">
+                 <span>{{user.first_name}}</span>
+                 <span>{{user.email}}</span>
+             </div>
+         </div>
+         <div class="col-4">
+    <form method="post" id="file_upload_form" enctype="multipart/form-data">
+             <div class="post_btn">
+                    {% csrf_token %}
+                    <input type='file' name="myfile" id="file_upload_ip" class="no_display" accept="image/*"/>
+                    <button type="button" id="add_image" class="pointer" data-toggle="tooltip" title="click here to add photo">
+                            <i class="fa fa-picture-o" aria-hidden="true"></i>Add
+                    </button>
+                    <button type="submit" id="post_feed" disabled class="no_pointer" data-toggle="tooltip" title="click here to post">
+                            <i class="fa fa-telegram" aria-hidden="true"></i>Post
+                    </button>
+             </div>
+          </div>
+      </div>
+      <div class="post_card_textarea">
+           <div class="row">
+                <div class="col-12">
+                     <img id="preview_file" src="#" alt="your image" class="no_display"/>
+                     <i class="fa fa-times-circle pointer" id="img_rmve_btn" 
+                        data-toggle="tooltip" title="Remove photo" aria-hidden="true">
+                     </i>
+                </div>
+           </div>
+           <div class="row">
+                <div class="col-11">
+                      <textarea class="form-control" placeholder="Hey! Try some thing here..." maxlength="130" rows="2" id="post_desc"></textarea>
+                </div>
+                <div class="col-1">
+                     <span id="letters_count">0 / 130</span>
+                </div>
+           </div>
+      </div> 
+    </form>
+    </div>
+</div>
