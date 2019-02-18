@@ -27,8 +27,10 @@ host : localhost (default)
 ```
 ## Installation
 
+
 ```bash
 git clone https://github.com/goutham9032/Mockfb.git
+cd Mockfb
 ```
 
 ```bash
@@ -36,11 +38,11 @@ pip3 install -r requirements.txt
 ```
 
 ```bash
-python3 manage.py migrate
+python3 manage.py makemigrations
 ```
 
 ```bash
-python3 manage.py runserver
+python3 manage.py migrate
 ```
 
 ```bash
@@ -51,6 +53,7 @@ python3 manage.py createsuperuser # create dummy user with username, emailid and
 python3 manage.py shell
 >>> from django.contrib.auth.models import User
 >>> User.objects.filter(id=1).update(first_name="Anjelina John") # provide some first name to dummy user to use in template
+>>> exit()
 ```
 
 ## Running Locally
@@ -61,6 +64,8 @@ python3 manage.py runserver 0:2222
 
 ## In browser
 ```python
-http://localhost:2222
+http://localhost:2222 
+     or
+http://<ipaddress/domain name>:2222 # when you are running on server
 ```
 
