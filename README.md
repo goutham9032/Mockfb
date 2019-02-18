@@ -5,13 +5,25 @@ This projects Mocks the functionality of facebook, where user can post feed, upl
 ## Stack details
 ```bash
 Framework : python-Django
+version : Django-1.9.8
+
+Database:
 Db : sqlite (default)
+
+Backend:
+Language : python
+verison : python3
 
 Front-end:
 HTML : HTML5
 css : bootstrap4
 js
 
+Log file:
+location : /var/log/mock_fb.log 
+
+Hostname:
+host : localhost (default)
 ```
 ## Installation
 
