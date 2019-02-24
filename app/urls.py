@@ -8,6 +8,7 @@ urlpatterns = [
     url('^$', views.home, name='home'),
     url(r'^fileupload/$', views.feed_content, name='feed_content'),
     url(r'^activity/$', views.feed_activity, name='feed_activity'),
+
 ]
 
 if settings.DEBUG:

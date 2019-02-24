@@ -27,7 +27,7 @@ SECRET_KEY = '(@44m*70ipxapv2lt7lzzy50ycf*5mt$r9fyv1+od3nf3@tq2s'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost','159.69.205.72']
 
 LOG = init_logger(
 	fmt = None,
@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'app',
 ]
 
-MIDDLEWARE = [
+# Modified : earlier it was MIDDLEWARE and changed it to MIDDLEWARE_CLASSES in django 1.9
+MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -125,6 +126,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGIN_REDIRECT_URL = '/'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

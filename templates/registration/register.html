@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    <form method="POST">
+        {% csrf_token %} 
+        {{ form.as_p }}
+        {% comment %}
+           In this form.as_p gives an string from backend that contains this html
+           <p>
+             <label for="id_username">Username:</label> 
+             <input id="id_username" maxlength="32" name="username" type="text" />
+           </p>
+           <p>
+             <label for="id_email">Email:</label> 
+             <input id="id_email" maxlength="32" name="email" type="text" />
+           </p>
+           <p>
+             <label for="id_password">Password:</label>
+             <input id="id_password" maxlength="32" name="password" type="password" />
+           </p>
+        {% endcomment %}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
