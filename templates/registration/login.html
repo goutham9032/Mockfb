@@ -1,13 +1,47 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
+{% extends 'base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}    
+<div class="container login">
+    <div class="row justify-content-center">
+		<div class="col-md-4 col-md-offset-4">
+    		<div class="panel panel-default">
+			  	<div class="panel-heading">
+			    	<h3 class="panel-title">Sign In</h3>
+			 	</div>
+			  	<div class="panel-body">
+			    	<form accept-charset="UTF-8" role="form" method="POST">
+                    {% csrf_token %}
+                    <fieldset>
+			    	  	<div class="form-group">
+                            <input class="form-control" placeholder="Username" 
+                                   required id="id_username" maxlength="15" name="username" type="text" />
+			    		</div>
+			    		<div class="form-group">
+                            <input class="form-control" placeholder="Password" 
+                                   required id="id_password" name="password" type="password" />
+			    		</div>
+			    		<div class="checkbox">
+			    	    	<label>
+			    	    		<input name="remember" type="checkbox" value="Remember Me"> Remember Me
+			    	    	</label>
+			    	    </div>
+                        <div class="form-group">
+			    	    	<input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
+                        </div>
+                        <div class="form-group">
+                              <p class="text-center">Don't have account? <a href="/accounts/register/">Sign up here</a></p>
+                        </div>
+			    	</fieldset>
+			      	</form>
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>
+{% comment %}
     <form method="POST">
         {% csrf_token %}
         {{form.as_p}}
-        {% comment %}
            <p>
              <label for="id_username">Username:</label> 
              <input id="id_username" maxlength="254" name="username" type="text" />
@@ -16,8 +50,7 @@
              <label for="id_password">Password:</label>
              <input id="id_password" name="password" type="password" />
            </p>
-        {% endcomment%}
         <button type="submit">Login</button>
     </form>
-</body>
-</html>
+{% endcomment %}
+{% endblock %}

@@ -213,3 +213,14 @@ input[type="file"]{
     padding: 0.1rem;
     color: #929292;
 }
+.login .col-md-4{
+   padding: 1rem;
+    border: 1px solid #d4d4d4;
+    border-radius: 1rem;
+}
+.login .row{
+  transform: translatey(50%);
+}
+.signup .row{
+  transform: translatey(20%)!important;
+}

@@ -5,6 +5,16 @@ class UserRegistrationForm(forms.Form):
         label = 'Username',
         max_length = 32
     )
+    firstname = forms.CharField(
+        required = True,
+        label = 'Firstname',
+        max_length = 32
+    )
+    lastname = forms.CharField(
+        required = True,
+        label = 'Lastname',
+        max_length = 32
+    )
     email = forms.CharField(
         required = True,
         label = 'Email',

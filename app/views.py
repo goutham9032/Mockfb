@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import urllib
 
 from django.shortcuts import render, redirect
 from django.conf import settings
@@ -32,14 +33,14 @@ def get_user_from_session(req_perm):
               f_name='get_user_from_session',
               user_id=user.id, username=user.username)
 
+@login_required
 def home(request):
     log.info('home_page_opened',
              action_type="opened",
              f_name="home",
              time=int(time.time()))
 
-    # get_user_from_session(request)
-    user = User.objects.first()
+    user = User.objects.get(id=request.user.id)
     feeds = FeedActivity.objects.all().order_by('-id')
     return render(request, 'home.html', { 'feeds': feeds , 'user': user})
 
@@ -102,19 +103,21 @@ def feed_activity(request):
 
 def register(request):
     if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            userObj = form.cleaned_data
-            username = userObj['username']
-            email =  userObj['email']
-            password =  userObj['password']
-            if not (User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists()):
-                User.objects.create_user(username, email, password)
-                user = authenticate(username = username, password = password)
-                login(request, user)
-                return HttpResponseRedirect('/')
-            else:
-                raise forms.ValidationError('Looks like a username with that email or password already exists')
+        post_body = request.POST.dict()
+        username = post_body['username']
+        email =  post_body['email']
+        password = post_body['password']
+        firstname = post_body['firstname']
+        lastname = post_body['lastname']
+        if not (User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists()):
+            User.objects.create_user(username=username, email=email,
+                                     password=password, first_name=firstname,
+                                     last_name=lastname)
+            user = authenticate(username = username, password = password)
+            login(request, user)
+            return HttpResponseRedirect('/')
+        else:
+            raise forms.ValidationError('Looks like a username with that email or password already exists')
     else:
         form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'form' : form})
