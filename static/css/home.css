@@ -224,3 +224,6 @@ input[type="file"]{
 .signup .row{
   transform: translatey(20%)!important;
 }
+.profile_dropdown{
+    padding:0!important;
+}
