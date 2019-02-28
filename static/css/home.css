@@ -219,11 +219,15 @@ input[type="file"]{
     border-radius: 1rem;
 }
 .login .row{
-  transform: translatey(50%);
+  transform: translatey(25%);
 }
 .signup .row{
   transform: translatey(20%)!important;
 }
 .profile_dropdown{
     padding:0!important;
+}
+.login .alert{
+    font-size:0.8rem;
+    padding:0.4rem;
 }

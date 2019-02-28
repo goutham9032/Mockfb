@@ -129,11 +129,16 @@ def login_user(request):
         username = req.get('username','')
         password = req.get('password','')
         if not (User.objects.filter(username=username).exists() and password):
-           return JsonResponse({'success':False})
+            return render(request, 'registration/login.html', {'success': False, 'data':req})
         user = authenticate(username = username, password = password)
+        if 'remember' not in req:
+            request.session.set_expiry(0)
+            settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+        else:
+            settings.SESSION_EXPIRE_AT_BROWSER_CLOSE = False
         login(request, user)
         return HttpResponseRedirect('/')
     else:
         form = AuthenticationForm(request)
-        return render(request, 'registration/login.html', {'form': form})
+        return render(request, 'registration/login.html', {'success': True})
 

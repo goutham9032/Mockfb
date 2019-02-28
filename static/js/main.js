@@ -118,6 +118,11 @@ $DOM.ready(function(){
         }
     }
 
+
+    function change_checkbox_val(){
+        $(this).val('YES');
+    }
+
     function bindEvents() {
 		$DOM.on('change', '#file_upload_ip', upload_file)
 		    .on('input propertychange', "#post_desc", feed_desc_count)
@@ -126,6 +131,7 @@ $DOM.ready(function(){
 	        .on('click', '.delete_feed', delete_feed)
 		    .on('click', '#post_feed', post_feed)
 	        .on('click', '.like_heart', like_unlike_activity)
+            .on('change', '#id_remember', change_checkbox_val)
     }
 
     bindEvents();
