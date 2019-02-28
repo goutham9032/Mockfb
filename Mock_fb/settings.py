@@ -33,7 +33,6 @@ LOG = init_logger(
 	fmt = None,
 	quiet = False,
         level = 'INFO',
-        fpath = '/var/log/mock_fb.log',
         pre_hooks = [],
         post_hooks = [],
         metric_grouping_interval = 1)
@@ -127,6 +126,15 @@ USE_L10N = True
 USE_TZ = True
 
 LOGIN_REDIRECT_URL = '/'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_PASSWORD = '******' #my gmail password
+EMAIL_HOST_USER = '*****@gmail.com' #my gmail username
+EMAIL_PORT = 587
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
@@ -137,3 +145,9 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+try:
+    from Mock_fb.local_settings import *
+except ImportError:
+    print ('Warning: No local settings! please provide username, password in settings.py if not provided')
+
