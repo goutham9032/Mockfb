@@ -131,10 +131,12 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 EMAIL_USE_TLS = True
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_PASSWORD = '******' #my gmail password
-EMAIL_HOST_USER = '*****@gmail.com' #my gmail username
+EMAIL_HOST_PASSWORD = '******' # user gmail password
+EMAIL_HOST_USER = '*****@gmail.com' # user gmail username
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+OTP_EXPIRY_LIMIT = 30 # 30 sec
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/

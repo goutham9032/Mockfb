@@ -11,5 +11,7 @@ urlpatterns = [
     url(r'^accounts/login/$', app_views.login_user, name="login_user"),
     url(r'^accounts/logout/$', auth_views.logout, {'template_name':'registration/logout.html'}),
     url(r'^accounts/register/$', app_views.register, name="register"),
+    url(r'^accounts/password_reset/$', app_views.password_reset, name="password_reset"),
+
     url(r'^', include('app.urls')), # No need of import
 ]

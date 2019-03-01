@@ -1,5 +1,8 @@
 $DOM = $(document)
 $DOM.ready(function(){
+
+    var OTP_SESSION = 45 // sec
+
     function call_ajax(url, type, data) {
          data = data || '';
          var request = $.ajax({
@@ -64,6 +67,7 @@ $DOM.ready(function(){
 		});
     }
 
+
     function post_feed(){
         event.preventDefault();
         var request = new XMLHttpRequest();
@@ -123,6 +127,68 @@ $DOM.ready(function(){
         $(this).val('YES');
     }
 
+
+    function csrfSafeMethod(method) {
+       // these HTTP methods do not require CSRF protection
+       return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    function ajax_csrf_exempt_setup(){
+		// set csrf header
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+		$.ajaxSetup({
+			beforeSend: function(xhr, settings) {
+				if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+					xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				}
+			}
+		});
+    }
+
+    function set_timer(){
+       setInterval(function() {
+           $("#counter").html(OTP_SESSION)
+           OTP_SESSION--;
+       }, 1000)
+    }
+
+    function password_reset(){
+       ajax_csrf_exempt_setup()
+       email = $('#email').val()
+       url = window.location.pathname
+       type = 'POST'
+       data = {'email': email, 'type': 'register_otp'}
+       set_timer()
+       req = call_ajax(url, type, data);
+       $.when(req).done(function(data) {
+           if(data.success){
+               $('.password_reset').append('email has been set out to the email provided and enter valid otp')
+           }
+           else{
+               console.log('received false')
+           }
+       });
+
+    }
+
+    function verify_otp(){
+       ajax_csrf_exempt_setup()
+       email = $('#email').val()
+       otp = $('#otp').val(); 
+       url = window.location.pathname
+       type = 'POST'
+       data = {'email': email, 'type': 'verify_otp', 'otp': otp}
+       req = call_ajax(url, type, data);
+       $.when(req).done(function(data) {
+         if(data.success){
+             window.location.href = '/'
+         }
+         else{
+               $('.password_reset').append('otp failed')
+         }
+       });
+
+    }
+
     function bindEvents() {
 		$DOM.on('change', '#file_upload_ip', upload_file)
 		    .on('input propertychange', "#post_desc", feed_desc_count)
@@ -132,6 +198,8 @@ $DOM.ready(function(){
 		    .on('click', '#post_feed', post_feed)
 	        .on('click', '.like_heart', like_unlike_activity)
             .on('change', '#id_remember', change_checkbox_val)
+            .on('click', '.password_reset_btn', password_reset)
+            .on('click', '.otp_btn', verify_otp)
     }
 
     bindEvents();

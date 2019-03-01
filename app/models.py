@@ -12,3 +12,9 @@ class FeedActivity(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     likes_count = models.IntegerField(default=0)
     like = models.BooleanField(default=False)
+
+class OtpActivity(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    otp = models.IntegerField(default=0)
+    created_ts = models.IntegerField(default=0)
+

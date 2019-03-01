@@ -1,10 +1,13 @@
+import re
 import os
 import json
 import time
 import urllib
+from random import randint
 
 from django.shortcuts import render, redirect
 from django.conf import settings
+from django_otp.oath import TOTP
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -12,16 +15,20 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.contrib.sessions.models import Session
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
+from django.core.mail import send_mail, EmailMultiAlternatives
+from django.template.loader import render_to_string, get_template
 from django import forms
 from django.contrib.auth.forms import (
     AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm,
 )
 from .forms import UserRegistrationForm
 
-from app.models import FeedActivity
+from app.models import FeedActivity, OtpActivity
 
 log = settings.LOG
 base_dir = settings.BASE_DIR
+
+OTP = ''
 
 def get_user_from_session(req_perm):
     # https://overiq.com/django-1-10/django-logging-users-in-and-out/
@@ -32,6 +39,66 @@ def get_user_from_session(req_perm):
     log.info('user_info_from_session',
               f_name='get_user_from_session',
               user_id=user.id, username=user.username)
+
+def send_support_mail(subject, mail, body="", template_path='', context='', cc_emails=[]):
+    message = EmailMultiAlternatives(subject=subject,
+        body=body, from_email=settings.EMAIL_HOST_USER,
+        to=[mail], cc=cc_emails)
+
+    context = context
+    template = render_to_string('email_template.html', {'name':mail,'otp':context})
+    message.attach_alternative(template, "text/html")
+    message.send(fail_silently=True)
+    return True
+
+def get_otp_token(email, otp_exp_sec=30):
+    totp = TOTP(bytes('%s_%s'%(email,int(time.time())),'utf-8'))
+    totp.time = otp_exp_sec
+    return totp.token()
+
+def generate_otp_token(email, step=settings.OTP_EXPIRY_LIMIT, otp_length=6):
+    totp = TOTP(key=bytes(email,'utf-8'),
+                step=step, t0=0, digits=otp_length,
+                drift=0)
+    token = totp.token()
+    del totp
+    return token
+
+def verify_otp_token(email, token, step=settings.OTP_EXPIRY_LIMIT, otp_length=6):
+    totp = TOTP(key=bytes(email,'utf-8'),
+                step=step, t0=0, digits=otp_length,
+                drift=0)
+    status = totp.verify(token)
+    del totp
+    return status
+
+def password_reset(request):
+    if request.method == 'POST':
+        post_body = request.POST.dict() # This format will be used when JSON is not stringified in js
+        rand_no = lambda length : randint(int('1'*length),int('9'*length))
+        if post_body['type'] == 'register_otp':
+            otp = rand_no(6)
+            user = User.objects.get(email=post_body['email'])
+            OtpActivity.objects.update_or_create(user=user,
+                                                defaults={'otp':otp,
+                                                          'created_ts':int(time.time())
+                                                         })
+            print(otp)
+            val = send_support_mail('Password reset', post_body['email'], context=otp)
+            if val == 1:
+               return JsonResponse({'success':True})
+        elif post_body['type'] == 'verify_otp':
+            user = User.objects.get(email=post_body['email'])
+            obj = OtpActivity.objects.get(user=user)
+            created_ts = obj.created_ts
+            gen_otp = obj.otp
+            user_otp = int(post_body['otp'])
+            if int(time.time()) <= created_ts + settings.OTP_EXPIRY_LIMIT and gen_otp == user_otp:
+                return JsonResponse({'success':True})
+            else:
+                return JsonResponse({'success':False})
+    else:
+       return render(request, 'registration/password_reset.html')
 
 @login_required
 def home(request):
