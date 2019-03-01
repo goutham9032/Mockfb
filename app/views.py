@@ -71,6 +71,7 @@ def password_reset(request):
             created_ts = obj.created_ts
             verified = check_password(post_body['otp'], obj.otp)
             if int(time.time()) <= created_ts + settings.OTP_EXPIRY_LIMIT and verified:
+                login(request, user)
                 return JsonResponse({'success':True})
             else:
                 return JsonResponse({'success':False})
