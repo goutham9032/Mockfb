@@ -15,6 +15,6 @@ class FeedActivity(models.Model):
 
 class OtpActivity(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    otp = models.IntegerField(default=0)
+    otp = models.CharField(max_length=255)
     created_ts = models.IntegerField(default=0)
 

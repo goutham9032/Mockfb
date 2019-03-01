@@ -16,6 +16,7 @@ from django.contrib.sessions.models import Session
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
 from django.core.mail import send_mail, EmailMultiAlternatives
+from django.contrib.auth.hashers import make_password, check_password
 from django.template.loader import render_to_string, get_template
 from django import forms
 from django.contrib.auth.forms import (
@@ -27,8 +28,6 @@ from app.models import FeedActivity, OtpActivity
 
 log = settings.LOG
 base_dir = settings.BASE_DIR
-
-OTP = ''
 
 def get_user_from_session(req_perm):
     # https://overiq.com/django-1-10/django-logging-users-in-and-out/
@@ -51,39 +50,18 @@ def send_support_mail(subject, mail, body="", template_path='', context='', cc_e
     message.send(fail_silently=True)
     return True
 
-def get_otp_token(email, otp_exp_sec=30):
-    totp = TOTP(bytes('%s_%s'%(email,int(time.time())),'utf-8'))
-    totp.time = otp_exp_sec
-    return totp.token()
-
-def generate_otp_token(email, step=settings.OTP_EXPIRY_LIMIT, otp_length=6):
-    totp = TOTP(key=bytes(email,'utf-8'),
-                step=step, t0=0, digits=otp_length,
-                drift=0)
-    token = totp.token()
-    del totp
-    return token
-
-def verify_otp_token(email, token, step=settings.OTP_EXPIRY_LIMIT, otp_length=6):
-    totp = TOTP(key=bytes(email,'utf-8'),
-                step=step, t0=0, digits=otp_length,
-                drift=0)
-    status = totp.verify(token)
-    del totp
-    return status
-
 def password_reset(request):
     if request.method == 'POST':
         post_body = request.POST.dict() # This format will be used when JSON is not stringified in js
         rand_no = lambda length : randint(int('1'*length),int('9'*length))
         if post_body['type'] == 'register_otp':
-            otp = rand_no(6)
             user = User.objects.get(email=post_body['email'])
+            otp = rand_no(6)
+            enc_otp = make_password(otp, '36000', 'pbkdf2_sha256')
             OtpActivity.objects.update_or_create(user=user,
-                                                defaults={'otp':otp,
+                                                defaults={'otp':enc_otp,
                                                           'created_ts':int(time.time())
                                                          })
-            print(otp)
             val = send_support_mail('Password reset', post_body['email'], context=otp)
             if val == 1:
                return JsonResponse({'success':True})
@@ -91,9 +69,8 @@ def password_reset(request):
             user = User.objects.get(email=post_body['email'])
             obj = OtpActivity.objects.get(user=user)
             created_ts = obj.created_ts
-            gen_otp = obj.otp
-            user_otp = int(post_body['otp'])
-            if int(time.time()) <= created_ts + settings.OTP_EXPIRY_LIMIT and gen_otp == user_otp:
+            verified = check_password(post_body['otp'], obj.otp)
+            if int(time.time()) <= created_ts + settings.OTP_EXPIRY_LIMIT and verified:
                 return JsonResponse({'success':True})
             else:
                 return JsonResponse({'success':False})
