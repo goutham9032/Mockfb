@@ -14,29 +14,47 @@
                     <fieldset>
 			    	  	<div class="form-group">
                             <input class="form-control" placeholder="Firstname" 
-                                   required id="id_firstname" maxlength="15" name="firstname" type="text" />
+                                   required id="id_firstname" maxlength="15" 
+                                   name="firstname" type="text" value="{{data.firstname}}"/>
 			    		</div>
 			    	  	<div class="form-group">
                             <input class="form-control" placeholder="Lastname" 
-                                   required id="id_lastname" maxlength="15" name="lastname" type="text" />
+                                   required id="id_lastname" maxlength="15"
+                                   name="lastname" type="text" value="{{data.lastname}}"/>
 			    		</div>
 			    	  	<div class="form-group">
                             <input class="form-control" placeholder="Username" 
-                                   required id="id_username" maxlength="15" name="username" type="text" />
+                                   required id="id_username" maxlength="15"
+                                   name="username" type="text" value="{{data.username}}"/>
 			    		</div>
 			    	  	<div class="form-group">
                             <input class="form-control" placeholder="Email" 
-                                   required id="id_email" maxlength="32" name="email" type="email" />
+                                   required id="id_email" maxlength="32" name="email"
+                                   type="email" value="{{data.email}}"/>
 			    		</div>
 			    		<div class="form-group">
                             <input class="form-control" placeholder="Password" 
-                                   required id="id_password" maxlength="15" name="password" type="password" />
+                                   required id="id_password" maxlength="15" 
+                                   name="password" type="password" value="{{data.password}}"/>
 			    		</div>
-			    		<div class="checkbox">
+			    		<div class="checkbox no_display">
 			    	    	<label>
 			    	    		<input name="remember" type="checkbox" value="Remember Me"> Remember Me
 			    	    	</label>
 			    	    </div>
+                        <div class="form-group">
+                            {% if not success %}
+                                <div class="alert alert-danger">
+                                    {% if user_exists and email_exists %}
+                                       Username and email already exists ! please try sign in 
+                                    {% elif email_exists %}
+                                       Email already exists, please try signing in :)
+                                    {% else %}
+                                       Username already exists ! please try new 
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
                         <div class="form-group">
 			    	    	<input class="btn btn-lg btn-success btn-block" type="submit" value="Sign Up">
                         </div>

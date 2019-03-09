@@ -227,7 +227,7 @@ $DOM.ready(function(){
        req = call_ajax(url, type, data);
        $.when(req).done(function(data) {
          if(data.success){
-             window.location.href = '/'
+             window.location.href = data.pwd_reset_url
          }
          else{
              err_obj = $('.err')

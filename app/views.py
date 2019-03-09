@@ -70,6 +70,17 @@ def password_reset(request, key):
           return JsonResponse({'success':False})
     return render(request, 'registration/password_reset.html', {'user':user})
 
+
+def get_passwd_reset_encoded_link(req, email, passwd):
+    json_dumps = lambda email, key : json.dumps({'email':email,
+                                                 'key':key.split('$')[-1],
+                                                 'timestamp':int(time.time())})
+    encode = lambda email, key: base64.urlsafe_b64encode(bytes(json_dumps(email, key), 'utf-8'))
+    encoded_key = encode(email, passwd)
+    home_url = req.get_raw_uri().split('accounts')[0]
+    encoded_url = '%saccounts/password_reset/%s'%(home_url, encoded_key.decode())
+    return encoded_url
+
 def forgot_password(request):
     if request.method == 'POST':
         post_body = request.POST.dict() # This format will be used when JSON is not stringified in js
@@ -89,16 +100,11 @@ def forgot_password(request):
                                                 defaults={'otp':enc_otp,
                                                           'created_ts':int(time.time())
                                                          })
-            json_dumps = lambda email, key : json.dumps({'email':email,
-                                                         'key':key.split('$')[-1],
-                                                         'timestamp':int(time.time())})
-            encode = lambda email, key: base64.urlsafe_b64encode(bytes(json_dumps(email, key), 'utf-8'))
-            encoded_key = encode(user.email, user.password)
-            home_url = request.get_raw_uri().split('accounts')[0]
-            encoded_url = '%saccounts/password_reset/%s'%(home_url, encoded_key.decode())
+            encoded_url = get_passwd_reset_encoded_link(req=request, email=user.email, passwd=user.password)
             email_pass_reset_msg = ' <br><br><a href="%s">Click here to reset password</a>'%(encoded_url)
-            val = send_support_mail('Password reset', post_body['email'], context={'otp':otp,
+            val = send_support_mail('[MockFb] Password Reset - %s'%(otp), post_body['email'], context={'otp':otp,
                                                                                    'email':post_body['email'],
+                                                                                   'name':user.username,
                                                                                    'pass_reset_url': encoded_url})
             if val == 1:
                # method 1 setting to session some variables
@@ -123,9 +129,12 @@ def forgot_password(request):
             obj = OtpActivity.objects.get(user=user)
             created_ts = obj.created_ts
             verified = check_password(post_body['otp'], obj.otp)
+            pwd_reset_url = get_passwd_reset_encoded_link(req=request,
+                                                          email=user.email,
+                                                          passwd=user.password)
             if int(time.time()) <= created_ts + settings.OTP_EXPIRY_LIMIT and verified:
-                login(request, user)
-                return JsonResponse({'success':True})
+                # login(request, user) if we want we can login here only
+                return JsonResponse({'success':True, 'pwd_reset_url': pwd_reset_url})
             else:
                 return JsonResponse({'success':False})
     else:
@@ -207,7 +216,9 @@ def register(request):
         password = post_body['password']
         firstname = post_body['firstname']
         lastname = post_body['lastname']
-        if not (User.objects.filter(username=username).exists() or User.objects.filter(email=email).exists()):
+        user_exists = User.objects.filter(username=username).exists()
+        email_exists = User.objects.filter(email=email).exists()
+        if not (user_exists or email_exists):
             User.objects.create_user(username=username, email=email,
                                      password=password, first_name=firstname,
                                      last_name=lastname)
@@ -215,7 +226,10 @@ def register(request):
             login(request, user)
             return HttpResponseRedirect('/')
         else:
-            raise forms.ValidationError('Looks like a username with that email or password already exists')
+            return render(request, 'registration/register.html', {'success':False,
+                                                                 'user_exists':user_exists,
+                                                                 'email_exists':email_exists,
+                                                                 'data':post_body})
     else:
         form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'form' : form})
@@ -229,6 +243,8 @@ def login_user(request):
         if not (User.objects.filter(username=username).exists() and password):
             return render(request, 'registration/login.html', {'success': False, 'data':req})
         user = authenticate(username = username, password = password)
+        if not user:
+            return render(request, 'registration/login.html', {'success': False, 'data':req})
         # TODO: session expire working in firefox, not in crome
         if 'remember' not in req:
             request.session.set_expiry(0)
