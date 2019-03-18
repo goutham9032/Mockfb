@@ -46,14 +46,11 @@ python3 manage.py migrate
 ```
 
 ```bash
-python3 manage.py createsuperuser # create dummy user with username, emailid and password
-```
-
-```python
-python3 manage.py shell
->>> from django.contrib.auth.models import User
->>> User.objects.filter(id=1).update(first_name="Anjelina John") # provide some first name to dummy user to use in template
->>> exit()
+python3 manage.py createinitialrevisions
+python3 manage.py app.FeedActivity --comment="Initial revision."
+# https://django-reversion.readthedocs.io/en/stable/api.html
+# https://django-reversion.readthedocs.io/en/stable/commands.html#createinitialrevisions
+# Note : please run these commands if you have any feeds
 ```
 
 ## Running Locally

@@ -40,13 +40,16 @@ LOG = init_logger(
 # Application definition
 
 INSTALLED_APPS = [
+    # djnago apps
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    # 3rd party apps
+    'reversion',
+    # user defined apps
     'app',
 ]
 

@@ -6,6 +6,8 @@ import urllib
 import base64
 from random import randint
 
+import reversion
+from reversion.models import Version
 from django.shortcuts import render, redirect
 from django.conf import settings
 from django_otp.oath import TOTP
@@ -50,6 +52,27 @@ def send_support_mail(subject, mail, body="", template_path='', context={}, cc_e
     message.attach_alternative(template, "text/html")
     message.send(fail_silently=True)
     return True
+
+@csrf_exempt
+def update_feed_activity(request, slug):
+    data = request.POST.dict()
+    get_feed = lambda slug: FeedActivity.objects.get(slug=int(slug))
+    get_versions = lambda obj: Version.objects.get_for_object(obj)
+    with reversion.create_revision():
+         # https://django-reversion.readthedocs.io/en/stable/api.html
+         # Note : Update will not work, so use save
+         feed = get_feed(slug)
+         feed.description = data['description']
+         feed.save()
+         # reversion.set_user(request.user) # for testing remove this
+         reversion.set_comment("V%s"%(get_versions(feed).count()+1))
+    feed = get_feed(slug)
+    all_versions_obj = get_versions(feed)
+    all_versions = [{'comment':i.revision.comment,
+                     'data': json.loads(i.serialized_data),
+                     'id' : i.id,
+                    } for i in all_versions_obj]
+    return JsonResponse({'success':True, 'versions':all_versions})
 
 def password_reset(request, key):
     decoded_dict = json.loads(base64.urlsafe_b64decode(key).decode())

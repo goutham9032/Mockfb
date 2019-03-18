@@ -1,8 +1,11 @@
 import time
 
+import reversion
+
 from django.contrib.auth.models import User
 from django.db import models
 
+@reversion.register()
 class FeedActivity(models.Model):
     description = models.CharField(max_length=255, blank=True)
     file_location = models.CharField(max_length=255, default="")
