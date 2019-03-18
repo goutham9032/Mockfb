@@ -255,7 +255,7 @@ def register(request):
                                                                  'data':post_body})
     else:
         form = UserRegistrationForm()
-    return render(request, 'registration/register.html', {'form' : form})
+    return render(request, 'registration/register.html', {'form' : form, 'success':True})
 
 def login_user(request):
     # Note : please dont change function name as login, as login was already imported from djnago
