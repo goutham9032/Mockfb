@@ -53,6 +53,14 @@ python3 manage.py app.FeedActivity --comment="Initial revision."
 # Note : please run these commands if you have any feeds
 ```
 
+```bash
+If you want send emails for OTP then user need to give his/her gmail credentials in local_settings.py
+vim Mock_fb/local_settings.py 
+# add these two lines with valid details and then save file
+EMAIL_HOST_USER = 'xxxx@gmail.com' #my gmail username
+EMAIL_HOST_PASSWORD = '******' #my gmail password
+```
+
 ## Running Locally
 ```bash
 python3 manage.py runserver 0:2222 
