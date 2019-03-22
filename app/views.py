@@ -33,6 +33,25 @@ from app.models import FeedActivity, OtpActivity
 log = settings.LOG
 base_dir = settings.BASE_DIR
 
+def check_response_time(func):
+    def inner_fun(*args, **kwargs):
+        start = time.time()
+        res = func(*args, **kwargs)
+        total = time.time() - start
+        log.info('Total_time_taken_for_response : %s'%(total),
+                fn_name=func.__name__,
+                request_type=args[0].method,
+                status_code=res.status_code,
+                headers=res._headers,
+                url_path=args[0].build_absolute_uri())
+        return res
+    return inner_fun
+
+@csrf_exempt
+@check_response_time
+def test_url(request):
+    return JsonResponse({'success':True})
+
 def get_user_from_session(req_perm):
     # https://overiq.com/django-1-10/django-logging-users-in-and-out/
     session = Session.objects.get(session_key=req_perm.session.session_key)
@@ -104,6 +123,7 @@ def get_passwd_reset_encoded_link(req, email, passwd):
     encoded_url = '%saccounts/password_reset/%s'%(home_url, encoded_key.decode())
     return encoded_url
 
+@check_response_time
 def forgot_password(request):
     if request.method == 'POST':
         post_body = request.POST.dict() # This format will be used when JSON is not stringified in js
@@ -163,6 +183,7 @@ def forgot_password(request):
     else:
        return render(request, 'registration/forgot_password.html')
 
+@check_response_time
 @login_required
 def home(request):
     log.info('home_page_opened',

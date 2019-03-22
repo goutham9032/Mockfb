@@ -9,6 +9,7 @@ urlpatterns = [
     url(r'^fileupload/$', views.feed_content, name='feed_content'),
     url(r'^activity/$', views.feed_activity, name='feed_activity'),
     url(r'^update_feed/(?P<slug>[\w-]+)$', views.update_feed_activity, name='update_feed_activity'),
+    url(r'^test_url/$', views.test_url, name='test_url'),
 
 ]
 
