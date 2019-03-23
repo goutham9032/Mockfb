@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% include 'home_navbar.html'%}
+	<div class="container settings">
+       <div class="row justify-content-center">
+            <div class="col-8">
+                <p>Personal Access token</p>
+                <hr>
+                <p>Tokens you have generated that can be used to access the MockFB API.</p>
+                <div class="alert alert-primary" role="alert">
+                    {{token}}
+                </div>
+            </div>
+       </div>
+	</div>
+{% endblock %}

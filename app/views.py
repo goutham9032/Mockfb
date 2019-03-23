@@ -23,12 +23,16 @@ from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.contrib.auth.hashers import make_password, check_password
 from django.template.loader import render_to_string, get_template
 from django import forms
+from django.db.models import Q
 from django.contrib.auth.forms import (
     AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm,
 )
 from .forms import UserRegistrationForm
 
 from app.models import FeedActivity, OtpActivity
+
+# 3rd party moduls
+import arrow
 
 log = settings.LOG
 base_dir = settings.BASE_DIR
@@ -50,7 +54,49 @@ def check_response_time(func):
 @csrf_exempt
 @check_response_time
 def test_url(request):
+    import pdb;pdb.set_trace()
     return JsonResponse({'success':True})
+
+
+def get_feed_dict(feed):
+    get_time = lambda t_obj:arrow.get(t_obj).to('local').strftime("%Y-%m-%d %I:%M:%S %p %Z")
+    return dict(desciption=feed.description,
+                created_at=get_time(feed.created_at),
+                updated_at=get_time(feed.updated_at),
+                slug=feed.slug,
+                owner=dict(username=feed.owner.username,
+                           email=feed.owner.email)
+                )
+
+@csrf_exempt
+def create_feed(request):
+    try:
+        if 'HTTP_AUTHORIZATION' not in request.META:
+            raise Exception('Invalid credentials')
+        auth = request.META['HTTP_AUTHORIZATION'].split()
+        auth_type, cred = auth[0].lower(), auth[1]
+        if auth_type == 'basic':
+            username, password = base64.b64decode(bytes(cred, 'utf-8')).decode().split(':')
+            user = authenticate(username = username, password = password)
+        elif auth_type == 'bearer':
+            token = cred
+            decoded_token = json.loads(base64.urlsafe_b64decode(token).decode())
+            # validate for id and well as password key
+            user = User.objects.filter(Q(id=decoded_token['user_id']) &
+                                       Q(password__icontains=decoded_token['key']))
+        if user:
+           desc = request.POST.dict()['description']
+           feed = FeedActivity.objects.create(file_location='',
+                                             slug=int(time.time()),
+                                             owner=user,
+                                             description=desc)
+           feed_dict = get_feed_dict(feed)
+           return JsonResponse({'success':True, 'result': feed_dict})
+        else:
+           return JsonResponse({'success':False, 'message':'Invalid Credentials'})
+    except:
+        return JsonResponse({'success':False, 'message':'Invalid Credentials'})
+
 
 def get_user_from_session(req_perm):
     # https://overiq.com/django-1-10/django-logging-users-in-and-out/
@@ -72,6 +118,7 @@ def send_support_mail(subject, mail, body="", template_path='', context={}, cc_e
     message.send(fail_silently=True)
     return True
 
+@check_response_time
 @csrf_exempt
 def update_feed_activity(request, slug):
     data = request.POST.dict()
@@ -93,6 +140,7 @@ def update_feed_activity(request, slug):
                     } for i in all_versions_obj]
     return JsonResponse({'success':True, 'versions':all_versions})
 
+@check_response_time
 def password_reset(request, key):
     decoded_dict = json.loads(base64.urlsafe_b64decode(key).decode())
     user = User.objects.get(email=decoded_dict['email'])
@@ -195,6 +243,18 @@ def home(request):
     feeds = FeedActivity.objects.all().order_by('-id')
     return render(request, 'home.html', { 'feeds': feeds , 'user': user})
 
+@check_response_time
+@login_required
+def user_settings(request):
+    user = User.objects.get(id=request.user.id)
+    json_dumps = lambda _id, key : json.dumps({'user_id':_id,
+                                                 'key':key.split('$')[-1],
+                                                })
+    encode_user_info = lambda _id, key: base64.urlsafe_b64encode(bytes(json_dumps(_id, key), 'utf-8'))
+    token = encode_user_info(user.id, user.password).decode()
+    return render(request, 'settings.html', { 'token': token ,'user': user})
+
+@check_response_time
 @csrf_exempt
 def feed_content(request):
     desc = request.GET.get('desc','')
@@ -217,6 +277,7 @@ def feed_content(request):
                                 description=desc)
     return HttpResponse('OK')
 
+@check_response_time
 @csrf_exempt
 def feed_activity(request):
     body = json.loads(request.body.decode())
@@ -252,6 +313,7 @@ def feed_activity(request):
     else:
         pass
 
+@check_response_time
 def register(request):
     if request.method == 'POST':
         post_body = request.POST.dict()
@@ -278,6 +340,7 @@ def register(request):
         form = UserRegistrationForm()
     return render(request, 'registration/register.html', {'form' : form, 'success':True})
 
+@check_response_time
 def login_user(request):
     # Note : please dont change function name as login, as login was already imported from djnago
     if request.method == 'POST':

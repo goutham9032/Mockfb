@@ -172,7 +172,7 @@ input[type="file"]{
    color:red;
 }
 .feed_card_div .dropdown{
-    left: 49%;
+    left: 47%;
     margin-top: 0.5rem;
     font-size: 1.2rem;
     font-weight: 900;
@@ -256,3 +256,18 @@ input[type="file"]{
     font-size: 0.9rem;
     color: #676363;
 }
+.settings p:nth-child(1){
+    font-size: 1.4rem;
+    margin: 2rem 0rem 0.5rem 0rem;
+}
+.settings p:nth-child(2){
+    margin: 0rem 0rem 0.5rem 0rem;
+    font-size: 0.9rem!important;
+}
+.settings hr{
+    margin: 0rem 0rem 0.5rem 0rem;
+}
+.settings .alert-primary{
+    font-size:0.7rem;
+}
+

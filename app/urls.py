@@ -8,8 +8,10 @@ urlpatterns = [
     url('^$', views.home, name='home'),
     url(r'^fileupload/$', views.feed_content, name='feed_content'),
     url(r'^activity/$', views.feed_activity, name='feed_activity'),
+    url(r'^settings/$', views.user_settings, name='user_settings'),
     url(r'^update_feed/(?P<slug>[\w-]+)$', views.update_feed_activity, name='update_feed_activity'),
     url(r'^test_url/$', views.test_url, name='test_url'),
+    url(r'^api/v1/create_feed/$', views.create_feed, name='create_feed'),
 
 ]
 
