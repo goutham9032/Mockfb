@@ -64,12 +64,16 @@ def get_feed_dict(feed):
                 created_at=get_time(feed.created_at),
                 updated_at=get_time(feed.updated_at),
                 slug=feed.slug,
+                likes=feed.likes_count,
                 owner=dict(username=feed.owner.username,
                            email=feed.owner.email)
                 )
 
 @csrf_exempt
 def create_feed(request):
+    # Expected post request format in python
+    # requests.post(url=<port_info>/api/v1/create_feed/', data={'description':'test'}, auth=(username, passwd)) or
+    # requests.post(url=<port_info>/api/v1/create_feed/', data={'description':test}, headers={'Authorization':'Bearer <token>'})
     try:
         if 'HTTP_AUTHORIZATION' not in request.META:
             raise Exception('Invalid credentials')
@@ -97,6 +101,23 @@ def create_feed(request):
     except:
         return JsonResponse({'success':False, 'message':'Invalid Credentials'})
 
+@csrf_exempt
+def get_all_feeds(request):
+    # Expected url format /get_all_feeds?token=<access_token>
+    token = request.GET.dict()
+    try:
+        if 'token' not in token:
+           raise Exception('Invalid credentials')
+        decoded_token = json.loads(base64.urlsafe_b64decode(token['token']).decode())
+        user = User.objects.filter(Q(id=decoded_token['user_id']) &
+                                   Q(password__icontains=decoded_token['key']))
+        if user:
+           feeds = FeedActivity.objects.filter(owner=user)
+           return JsonResponse({'success':False, 'feeds':[get_feed_dict(feed) for feed in feeds]})
+        else:
+           raise Exception('Invalid credentials')
+    except:
+        return JsonResponse({'success':False, 'message':'Invalid Credentials'})
 
 def get_user_from_session(req_perm):
     # https://overiq.com/django-1-10/django-logging-users-in-and-out/
@@ -277,8 +298,8 @@ def feed_content(request):
                                 description=desc)
     return HttpResponse('OK')
 
-@check_response_time
 @csrf_exempt
+@check_response_time
 def feed_activity(request):
     body = json.loads(request.body.decode())
     feed = FeedActivity.objects.filter(slug=int(body['feed_id']))
