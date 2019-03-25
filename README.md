@@ -60,7 +60,9 @@ vim Mock_fb/local_settings.py
 EMAIL_HOST_USER = 'xxxx@gmail.com' #my gmail username
 EMAIL_HOST_PASSWORD = '******' #my gmail password
 ```
-
+```
+python3 manage.py collectstatic # this will copy all your static files from project static folder to /var/www/static location
+```
 ## Running Locally
 ```bash
 python3 manage.py runserver 0:2222 
