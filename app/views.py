@@ -24,6 +24,7 @@ from django.contrib.auth.hashers import make_password, check_password
 from django.template.loader import render_to_string, get_template
 from django import forms
 from django.db.models import Q
+from django import template
 from django.contrib.auth.forms import (
     AuthenticationForm, PasswordChangeForm, PasswordResetForm, SetPasswordForm,
 )
@@ -36,6 +37,13 @@ import arrow
 
 log = settings.LOG
 base_dir = settings.BASE_DIR
+register = template.Library()
+
+@register.filter
+def split(val):
+    return val.split(',')
+
+######################################################################################## Decorators
 
 def check_response_time(func):
     def inner_fun(*args, **kwargs):
@@ -51,13 +59,17 @@ def check_response_time(func):
         return res
     return inner_fun
 
+####################################################################################### Testing apis
 @csrf_exempt
 @check_response_time
 def test_url(request):
     import pdb;pdb.set_trace()
     return JsonResponse({'success':True})
 
+def test_tags(request):
+    return render(request, 'test_tags.html',{'lis':['a','b','c']})
 
+#######################################################################################
 def get_feed_dict(feed):
     get_time = lambda t_obj:arrow.get(t_obj).to('local').strftime("%Y-%m-%d %I:%M:%S %p %Z")
     return dict(desciption=feed.description,

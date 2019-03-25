@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^update_feed/(?P<slug>[\w-]+)$', views.update_feed_activity, name='update_feed_activity'),
     # testing
     url(r'^test_url/$', views.test_url, name='test_url'),
+    url(r'^test_tags/$', views.test_tags, name='test_tags'),
     # Api's
     url(r'^api/v1/create_feed/$', views.create_feed, name='create_feed'),
     url(r'^api/v1/get_all_feeds$', views.get_all_feeds, name='get_all_feeds'),

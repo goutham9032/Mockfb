@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% load app_filters %} {# http://www.pfinn.net/custom-django-filter-tutorial.html #}
+{% block content %}
+   <p>----------------- <b>Django tags</b>---------------------------------</p>
+   <p>1. Default example      : <b>{{ title|default:"untitled" }}</b></p>
+   <p>2. String lower/upper   : <b>{{'CAPSTOSMALL'|lower}} / {{'smalltoup'|upper}}</b></p>
+   <p>3. string length        : <b>{{'test'|length}}</b></p>
+   <p>4. string list          : <b>{{'test'|make_list }}</b></p>
+   <p>5. join list            : <b>{{ lis|join:"" }}</b></p>
+   <p>6. Truncatete chars     : <b>{{ 'goutham'|truncatechars:5}}</b></p>
+   <p> ----------------<b>custom tags</b>-----------------------------</p>
+   <p>7. Split words          : <b>{{ 'goutham,raju'|split_by:','}}</b></p>
+   <p>8  Get words count      : <b>{{ 'goutham raju test'|get_words_count}}</b></p>
+{% endblock %}
