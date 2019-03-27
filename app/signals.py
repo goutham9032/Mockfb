@@ -1,4 +1,5 @@
-# Note****: dont forgot to import this file in app/apps.py
+# Note****: dont forgot to import this file in app/apps.py and
+# default_app_config = 'app.apps.AppConfig' in __init__.py
 
 # django imports
 from django.contrib.auth.models import User
