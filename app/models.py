@@ -5,7 +5,7 @@ import reversion
 from django.contrib.auth.models import User
 from django.db import models
 
-@reversion.register()
+@reversion.register()  # using it for versions
 class FeedActivity(models.Model):
     description = models.CharField(max_length=255, blank=True)
     file_location = models.CharField(max_length=255, default="")

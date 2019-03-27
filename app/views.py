@@ -31,6 +31,7 @@ from django.contrib.auth.forms import (
 from .forms import UserRegistrationForm
 
 from app.models import FeedActivity, OtpActivity
+from app.signals import user_login
 
 # 3rd party moduls
 import arrow
@@ -43,7 +44,6 @@ register = template.Library()
 def split(val):
     return val.split(',')
 
-######################################################################################## Decorators
 
 def check_response_time(func):
     def inner_fun(*args, **kwargs):
@@ -59,7 +59,6 @@ def check_response_time(func):
         return res
     return inner_fun
 
-####################################################################################### Testing apis
 @csrf_exempt
 @check_response_time
 def test_url(request):
@@ -69,7 +68,6 @@ def test_url(request):
 def test_tags(request):
     return render(request, 'test_tags.html',{'lis':['a','b','c']})
 
-#######################################################################################
 def get_feed_dict(feed):
     get_time = lambda t_obj:arrow.get(t_obj).to('local').strftime("%Y-%m-%d %I:%M:%S %p %Z")
     return dict(desciption=feed.description,
@@ -267,6 +265,7 @@ def forgot_password(request):
 @check_response_time
 @login_required
 def home(request):
+    user_login.send(sender=None, request=request, user=request.user)
     log.info('home_page_opened',
              action_type="opened",
              f_name="home",
