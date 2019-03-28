@@ -14,7 +14,7 @@ from django_otp.oath import TOTP
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, StreamingHttpResponse
 from django.contrib.sessions.models import Session
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login
@@ -59,11 +59,19 @@ def check_response_time(func):
         return res
     return inner_fun
 
+def make_response():
+   for i in range(0,10):
+      yield i
+      time.sleep(1)
+
 @csrf_exempt
 @check_response_time
 def test_url(request):
-    import pdb;pdb.set_trace()
-    return JsonResponse({'success':True})
+    return HttpResponse('OK')
+
+@csrf_exempt
+def stream_data(request):
+    return StreamingHttpResponse(make_response(), content_type="application/json")
 
 def test_tags(request):
     return render(request, 'test_tags.html',{'lis':['a','b','c']})
