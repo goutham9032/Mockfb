@@ -154,8 +154,11 @@ def send_support_mail(subject, mail, body="", template_path='', context={}, cc_e
 
     template = render_to_string('email_template.html', context)
     message.attach_alternative(template, "text/html")
-    message.send(fail_silently=True)
-    return True
+    try:
+       message.send(fail_silently=False) #If u put true on fail also it returns 1
+       return True
+    except:
+       return False
 
 @check_response_time
 @csrf_exempt
