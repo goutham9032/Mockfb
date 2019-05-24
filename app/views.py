@@ -368,6 +368,8 @@ def register(request):
         user_exists = User.objects.filter(username=username).exists()
         email_exists = User.objects.filter(email=email).exists()
         if not (user_exists or email_exists):
+            # Note : when you create user , if we use .create it will store normal password
+            # If we do create_user it will store sha256 password
             User.objects.create_user(username=username, email=email,
                                      password=password, first_name=firstname,
                                      last_name=lastname)
@@ -406,4 +408,16 @@ def login_user(request):
     else:
         form = AuthenticationForm(request)
         return render(request, 'registration/login.html', {'success': True})
+
+@check_response_time
+def fork_feed(slug, new_user_obj):
+    '''
+    This function will helps us to create/fork the same feed with different id, make sure
+    to put pk as none so that it will create new id with same data in table
+    '''
+    feed = FeedActivity.objects.get(slug)
+    feed.pk = None
+    feed.slug = int(time.time())
+    feed.owner = new_user_obj
+    feed.save()
 
