@@ -10,7 +10,6 @@ import reversion
 from reversion.models import Version
 from django.shortcuts import render, redirect
 from django.conf import settings
-from django_otp.oath import TOTP
 from django.core.files.storage import FileSystemStorage
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required

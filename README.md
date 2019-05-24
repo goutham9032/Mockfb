@@ -75,4 +75,14 @@ http://localhost:2222
      or
 http://<ipaddress/domain name>:2222 # when you are running on server
 ```
+## To run Test suite
+```python
+python3 manage.py test [<arguments>]
+# By default it doesnt require arguments so it will run all tests belongs to all apps
+# If specific app required
+python3 manage.py test app.tests
+# if specific app test case required
+python3 manage.py test app.tests.class_name.function_name
+
+```
 
