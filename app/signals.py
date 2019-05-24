@@ -43,7 +43,8 @@ def feedactivity_signals(sender, instance, **kwargs):
                 'desc':instance.description,
               }
        try:
-          # comment this if you want to create it from shell
+          # comment this if you want to feed or some thing create it from shell
+          # which was dependent on this
           res = requests.post(url=hook.redirect_url, data=json.dumps(data),
                               headers=headers, timeout=20)
           if res.status_code == 200:

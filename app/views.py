@@ -414,6 +414,7 @@ def fork_feed(slug, new_user_obj):
     '''
     This function will helps us to create/fork the same feed with different id, make sure
     to put pk as none so that it will create new id with same data in table
+    plz check
     '''
     feed = FeedActivity.objects.get(slug)
     feed.pk = None
