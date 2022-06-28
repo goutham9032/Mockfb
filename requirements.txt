@@ -1,6 +1,6 @@
 Django==1.9.8
 basescript==0.2.6
 django-reversion==3.0.0
-arrow==0.13.1
+arrow==0.15.1
 requests==2.22.0
 django-crontab==0.7.1
